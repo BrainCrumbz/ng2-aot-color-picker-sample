@@ -3,9 +3,14 @@
   "version": "1.0.0",
   "description": "A simple starter Angular2 project",
   "scripts": {
+    "compile": "ngc -p tsconfig.aot.json",
     "build": "webpack --progress",
+    "build-aot": "set BUILD_MODE=aot&&webpack --progress",
+    "prebuild-aot": "npm run compile",
     "watch": "npm run build -- --watch",
     "server": "webpack-dev-server --inline --progress --port 3000 --content-base src",
+    "server-aot": "set BUILD_MODE=aot&&webpack-dev-server --inline --progress --port 3000 --content-base src",
+    "preserver-aot": "npm run compile",
     "start": "npm run server"
   },
   "contributors": [

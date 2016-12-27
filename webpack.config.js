@@ -2,10 +2,21 @@ var webpack = require('webpack');
 var path = require('path');
 var webpackMerge = require('webpack-merge');
 
+// detect build mode from environment
+var buildMode = process.env.BUILD_MODE;
+
+if (['jit', 'aot'].indexOf(buildMode) < 0) {
+  buildMode = 'jit';
+}
+
+var mainPath = buildMode === 'jit'
+  ? './src/main.browser.ts'
+  : './src/main.browser.aot.ts';
+
 // Webpack Config
 var webpackConfig = {
   entry: {
-    'main': './src/main.browser.ts',
+    'main': mainPath,
   },
 
   output: {
@@ -42,6 +53,41 @@ var webpackConfig = {
 
 };
 
+if (buildMode === 'aot') {
+  // Minimize scripts
+  var uglifyPlugin = new webpack.optimize.UglifyJsPlugin({
+    // to debug production build, uncomment lines in [debug] section and comment lines in [prod] section
+
+    // Settings for production build
+    beautify: false,
+    // To disable mangling for any reason, replace with:
+    // mangle: false,
+    mangle: {
+      screw_ie8 : true,
+      keep_fnames: true,
+    },
+    comments: false,
+    compress: {
+      warnings: false,
+      screw_ie8: true,
+      drop_debugger: true,
+      drop_console: false,
+      dead_code: true,
+    },
+  });
+
+  webpackConfig.plugins.push(uglifyPlugin);
+
+  // Until loaders are updated, use the LoaderOptionsPlugin to pass custom properties to third-party loaders
+  var optionsPlugin = new webpack.LoaderOptionsPlugin({
+    // (For UglifyJsPlugin) Put loaders into minimize mode
+    minimize: true,
+    debug: false,
+  });
+
+  webpackConfig.plugins.push(optionsPlugin);
+}
+
 
 // Our Webpack Defaults
 var defaultConfig = {
@@ -61,6 +107,7 @@ var defaultConfig = {
   devServer: {
     historyApiFallback: true,
     watchOptions: { aggregateTimeout: 300, poll: 1000 },
+    stats: { chunks: false },
     headers: {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",

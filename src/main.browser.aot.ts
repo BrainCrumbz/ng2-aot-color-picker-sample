@@ -1,14 +1,17 @@
 import './polyfills.browser';
 
+import { enableProdMode } from '@angular/core';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
-import { AppModule } from './app/app.module';
+import { AppModuleNgFactory } from '../codegen/src/app/app.module.ngfactory';
 
-console.log('JIT build');
+console.log('AOT build');
+
+enableProdMode();
 
 export const platformRef = platformBrowserDynamic();
 
 export function main() {
-  return platformRef.bootstrapModule(AppModule)
+  return platformRef.bootstrapModuleFactory(AppModuleNgFactory)
     .catch(err => console.error(err));
 }
 
