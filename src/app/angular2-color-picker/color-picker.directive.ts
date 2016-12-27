@@ -1,8 +1,8 @@
 /* tslint:disable */
-import {Component, OnChanges, Directive, Input, Output, ViewContainerRef, ElementRef, EventEmitter, OnInit, ViewChild} from '@angular/core';
+import {Component, OnChanges, Directive, Input, Output, ComponentFactoryResolver, ViewContainerRef, ElementRef, ComponentRef, EventEmitter, OnInit, OnDestroy, ViewChild} from '@angular/core';
 import {ColorPickerService} from './color-picker.service';
 import {Rgba, Hsla, Hsva, SliderPosition, SliderDimension} from './classes';
-import {NgModule, Compiler, ReflectiveInjector} from '@angular/core';
+import {NgModule, ReflectiveInjector} from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 @Directive({
@@ -12,7 +12,7 @@ import { BrowserModule } from '@angular/platform-browser';
         '(click)': 'onClick()'
     }
 })
-export class ColorPickerDirective implements OnInit, OnChanges {
+export class ColorPickerDirective implements OnInit, OnChanges, OnDestroy {
     @Input('colorPicker') colorPicker: string;
     @Output('colorPickerChange') colorPickerChange = new EventEmitter<string>(true);
     @Input('cpToggle') cpToggle: boolean;
@@ -38,10 +38,11 @@ export class ColorPickerDirective implements OnInit, OnChanges {
     @Input('cpAlphaChannel') cpAlphaChannel: string = 'hex6';
 
     private dialog: any;
+    private dialogComponentRef: ComponentRef<DialogComponent>;
     private created: boolean;
     private ignoreChanges: boolean = false;
 
-    constructor(private compiler: Compiler, private vcRef: ViewContainerRef, private el: ElementRef, private service: ColorPickerService) {
+    constructor(private factoryResolver: ComponentFactoryResolver, private vcRef: ViewContainerRef, private el: ElementRef, private service: ColorPickerService) {
         this.created = false;
     }
 
@@ -71,6 +72,14 @@ export class ColorPickerDirective implements OnInit, OnChanges {
         this.colorPickerChange.emit(this.service.outputFormat(hsva, this.cpOutputFormat, this.cpAlphaChannel === 'hex8'));
     }
 
+    ngOnDestroy() {
+        if (this.dialogComponentRef) {
+            this.dialogComponentRef.destroy();
+            this.dialogComponentRef = null;
+            this.dialog = null;
+        }
+    }
+
     onClick() {
         if (this.cpIgnoredElements.filter((item: any) => item === this.el.nativeElement).length === 0) {
             this.openDialog();
@@ -79,19 +88,24 @@ export class ColorPickerDirective implements OnInit, OnChanges {
 
     openDialog() {
         if (!this.created) {
+            const injector = ReflectiveInjector.fromResolvedProviders([], this.vcRef.parentInjector);
+            const factory = this.factoryResolver.resolveComponentFactory(DialogComponent);
+            /*
+            const componentRef = this.vcRef.createComponent(factory);
+            */
+            /*
+            const componentRef = factory.create(injector);
+            this.vcRef.insert(componentRef.hostView);
+            */
+            const componentRef = this.vcRef.createComponent(factory, 0, injector, []);
+            componentRef.instance.setDialog(this, this.el, this.colorPicker, this.cpPosition, this.cpPositionOffset,
+                this.cpPositionRelativeToArrow, this.cpOutputFormat, this.cpPresetLabel, this.cpPresetColors,
+                this.cpCancelButton, this.cpCancelButtonClass, this.cpCancelButtonText,
+                this.cpOKButton, this.cpOKButtonClass, this.cpOKButtonText, this.cpHeight, this.cpWidth,
+                this.cpIgnoredElements, this.cpDialogDisplay, this.cpSaveClickOutside, this.cpAlphaChannel);
+            this.dialog = componentRef.instance;
+            this.dialogComponentRef = componentRef;
             this.created = true;
-            this.compiler.compileModuleAndAllComponentsAsync(DynamicCpModule)
-                .then(factory => {
-                    const compFactory = factory.componentFactories.find(x => x.componentType === DialogComponent);
-                    const injector = ReflectiveInjector.fromResolvedProviders([], this.vcRef.parentInjector);
-                    const cmpRef = this.vcRef.createComponent(compFactory, 0, injector, []);
-                    cmpRef.instance.setDialog(this, this.el, this.colorPicker, this.cpPosition, this.cpPositionOffset,
-                        this.cpPositionRelativeToArrow, this.cpOutputFormat, this.cpPresetLabel, this.cpPresetColors,
-                        this.cpCancelButton, this.cpCancelButtonClass, this.cpCancelButtonText,
-                        this.cpOKButton, this.cpOKButtonClass, this.cpOKButtonText, this.cpHeight, this.cpWidth,
-                        this.cpIgnoredElements, this.cpDialogDisplay, this.cpSaveClickOutside, this.cpAlphaChannel);
-                    this.dialog = cmpRef.instance;
-                });
         } else if (this.dialog) {
             this.dialog.openDialog(this.colorPicker);
         }
