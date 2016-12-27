@@ -2,8 +2,7 @@
 import {Component, OnChanges, Directive, Input, Output, ComponentFactoryResolver, ViewContainerRef, ElementRef, ComponentRef, EventEmitter, OnInit, OnDestroy, ViewChild} from '@angular/core';
 import {ColorPickerService} from './color-picker.service';
 import {Rgba, Hsla, Hsva, SliderPosition, SliderDimension} from './classes';
-import {NgModule, ReflectiveInjector} from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
+import {ReflectiveInjector} from '@angular/core';
 
 @Directive({
     selector: '[colorPicker]',
@@ -90,19 +89,14 @@ export class ColorPickerDirective implements OnInit, OnChanges, OnDestroy {
         if (!this.created) {
             const injector = ReflectiveInjector.fromResolvedProviders([], this.vcRef.parentInjector);
             const factory = this.factoryResolver.resolveComponentFactory(DialogComponent);
-            /*
-            const componentRef = this.vcRef.createComponent(factory);
-            */
-            /*
-            const componentRef = factory.create(injector);
-            this.vcRef.insert(componentRef.hostView);
-            */
             const componentRef = this.vcRef.createComponent(factory, 0, injector, []);
+
             componentRef.instance.setDialog(this, this.el, this.colorPicker, this.cpPosition, this.cpPositionOffset,
                 this.cpPositionRelativeToArrow, this.cpOutputFormat, this.cpPresetLabel, this.cpPresetColors,
                 this.cpCancelButton, this.cpCancelButtonClass, this.cpCancelButtonText,
                 this.cpOKButton, this.cpOKButtonClass, this.cpOKButtonText, this.cpHeight, this.cpWidth,
                 this.cpIgnoredElements, this.cpDialogDisplay, this.cpSaveClickOutside, this.cpAlphaChannel);
+
             this.dialog = componentRef.instance;
             this.dialogComponentRef = componentRef;
             this.created = true;
@@ -548,9 +542,3 @@ export class DialogComponent implements OnInit {
         };
     }
 }
-
-@NgModule({
-    imports: [BrowserModule],
-    declarations: [DialogComponent, TextDirective, SliderDirective]
-})
-export class DynamicCpModule { };

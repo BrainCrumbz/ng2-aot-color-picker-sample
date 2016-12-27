@@ -2,12 +2,12 @@ import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 
 import {ColorPickerService} from './color-picker.service';
-import {ColorPickerDirective, DialogComponent, DynamicCpModule} from './color-picker.directive';
+import {ColorPickerDirective, DialogComponent, TextDirective, SliderDirective} from './color-picker.directive';
 
 @NgModule({
-    imports: [CommonModule, DynamicCpModule],
+    imports: [CommonModule],
     providers: [ColorPickerService],
-    declarations: [ColorPickerDirective],
+    declarations: [ColorPickerDirective, DialogComponent, TextDirective, SliderDirective],
     entryComponents: [DialogComponent],
     exports: [CommonModule, ColorPickerDirective]
 })

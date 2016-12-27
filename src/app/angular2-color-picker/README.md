@@ -12,6 +12,4 @@ Custom changes:
 * in templates/default/, rename color-picker.* to color-picker.component.*
 * exclude .ts files from linting
 * add newline to end of file in .ts files (tslint was complaining anyway)
-* export class DynamicCpModule
-* import DynamicCpModule in ColorPickerModule
 * remove private qualifier from a number of ColorPickerDirective properties
