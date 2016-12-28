@@ -251,3 +251,6 @@
   float: left;
   clear: left;
 }
+[hidden] {
+  display: none !important;
+}

@@ -1,8 +1,8 @@
 /*
  * Styles for Color Picker
- * 
+ *
  * Alberto Pujante
- * 
+ *
  * @licence: http://opensource.org/licenses/MIT
  */
 .color-picker *{
@@ -277,4 +277,8 @@
             }
         }
     }
+}
+
+[hidden] {
+    display: none !important;
 }
