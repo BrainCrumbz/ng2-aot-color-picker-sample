@@ -13,3 +13,6 @@ Custom changes:
 * exclude .ts files from linting
 * add newline to end of file in .ts files (tslint was complaining anyway)
 * remove private qualifier from a number of ColorPickerDirective properties
+* remove DynamicCpModule
+* declare inner directives and entry components in main module
+* replace Compiler with ComponentFactoryResolver
