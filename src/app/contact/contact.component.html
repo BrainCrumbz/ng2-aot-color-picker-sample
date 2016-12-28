@@ -18,7 +18,8 @@
       Color:
       <input type="text" formControlName="color" class="sd-form-control" placeholder="Pick your color."
              readonly="" [style.background]="colorBackground"
-             [colorPicker]="colorBackground" cpNoAlpha
+             [colorPicker]="colorBackground"
+             [cpAlphaChannel]="'disabled'"
              (colorPickerChange)="onColorPickerChange($event)">
     </label>
     <div class="form-submit">
