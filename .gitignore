@@ -1,4 +1,4 @@
 /node_modules/
 /dist/
 /codegen/
-/npm-debug.log
+/*debug.log
