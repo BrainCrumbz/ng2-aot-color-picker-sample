@@ -68,7 +68,9 @@ export class ColorPickerDirective implements OnInit, OnChanges, OnDestroy {
         if (hsva == null) {
             hsva = this.service.stringToHsva(this.cpFallbackColor);
         }
-        this.colorPickerChange.emit(this.service.outputFormat(hsva, this.cpOutputFormat, this.cpAlphaChannel === 'hex8'));
+        if (this.created) {
+            this.colorPickerChange.emit(this.service.outputFormat(hsva, this.cpOutputFormat, this.cpAlphaChannel === 'hex8'));
+        }
     }
 
     ngOnDestroy() {

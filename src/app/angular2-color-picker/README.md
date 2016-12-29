@@ -12,6 +12,10 @@ Custom changes:
 * in templates/default/, rename color-picker.* to color-picker.component.*
 * exclude .ts files from linting
 * add newline to end of file in .ts files (tslint was complaining anyway)
+* disable change event emitted during OnInit
+
+For AOT, specifically:
+
 * remove private qualifier from a number of ColorPickerDirective properties
 * remove DynamicCpModule
 * declare inner directives and entry components in main module
